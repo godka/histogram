@@ -56,42 +56,6 @@ namespace histogram
             return tmpbyte;
 
         }
-
-        private byte[] nearest(double[] mbyte)
-        {
-            double temp = 0;
-            byte[] near_p = new byte[256];
-            for (int j = 0; j < 256; j++)
-            {
-                temp += mbyte[j];
-                double distance = 100000;
-                for (int i = 0; i < 256; i++)
-                {
-                    double mindistance = Math.Abs(temp - (double)((double)(i) / 256));
-                    if (mindistance < distance)
-                    {
-                        near_p[j] = (byte)i;
-                        distance = mindistance;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            return near_p;
-        }
-        private byte[] nearest_new(double[] mbyte)
-        {
-            double temp = 0;
-            byte[] near_p = new byte[256];
-            for (int j = 0; j < 256; j++)
-            {
-                temp += mbyte[j];
-                near_p[j] = (byte)(temp * 256);
-            }
-            return near_p;
-        }
         private byte[] createnewhis(byte[] a_index,byte[] his_image)
         {
             byte[] his_new = new byte[width * height];
@@ -104,14 +68,20 @@ namespace histogram
 
         private byte[] singleStep(byte[] mbyte)
         {
-            double[] his_p = new double[256];
             int[] his = new int[256];
+            byte[] near_p = new byte[256];
+            long temp = 0;
             for (int i = 0; i < mbyte.Length; i++)
                 his[mbyte[i]]++;
             for (int i = 0; i < 256; i++)
-                his_p[i] = (double)((double)his[i] / mbyte.Length);
-            byte[] ret = createnewhis(nearest_new(his_p), mbyte);
-            return ret;
+            {
+                temp += his[i];
+                long mt = temp << 8;
+                near_p[i] = (byte)(mt / mbyte.LongLength);
+            }
+            for (int i = 0; i < width * height; i++)
+                mbyte[i] = near_p[mbyte[i]];
+            return mbyte;
         }
         public Image toGrayImage()
         {

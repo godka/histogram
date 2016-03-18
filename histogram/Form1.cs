@@ -19,7 +19,7 @@ namespace histogram
         private void button1_Click(object sender, EventArgs e)
         {
             equalization equ = new equalization("lena.jpg");
-            this.pictureBox1.Image = equ.toImage();
+            this.pictureBox1.Image = equ.toGrayImage();
             this.pictureBox2.Image = equ.toOriImage();
             //this.pictureBox3.Image = equ.toGrayImage();
         }
