@@ -11,6 +11,9 @@ namespace histogram
 {
     public partial class Form1 : Form
     {
+        [DllImport("AdaptHistEqualize.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true)]
+        private static extern void AdaptHistEqualize(IntPtr Scan0, int Width, int Height, int Stride, int TileX, int TileY, double CutLimit, bool SeparateChannel);
+        equalization equ;
         public Form1()
         {
             InitializeComponent();
@@ -18,13 +21,33 @@ namespace histogram
 
         private void button1_Click(object sender, EventArgs e)
         {
-            equalization equ = new equalization("lena.jpg");
-            this.pictureBox1.Image = equ.toGrayImage();
-            this.pictureBox2.Image = equ.toOriImage();
-            //this.pictureBox3.Image = equ.toGrayImage();
+            this.pictureBox1.Image = equ.toOriImage();
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+            equ = new equalization("lena.jpg");
+            this.pictureBox1.Image = equ.toOriImage();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            this.pictureBox1.Image = equ.toGrayOriImage();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+            this.pictureBox1.Image = equ.toImage();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.pictureBox1.Image = equ.toGrayImage();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
         {
 
         }

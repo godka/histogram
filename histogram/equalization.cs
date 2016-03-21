@@ -49,7 +49,6 @@ namespace histogram
             int j = 0;
             for (int i = 0; i < width * height * 4; i += 4)
             {
-                //double tmp = 0.299 * m_data[i] + 0.517 * m_data[i + 1] + 0.114 * m_data[i + 2];
                 tmpbyte[j++] = m_data[i + index];
 
             }
@@ -87,6 +86,24 @@ namespace histogram
         {
             Bitmap Img = new Bitmap(width, height);
             var simpleret = singleStep(toGray());
+            byte[] s = new byte[width * height * 4];
+            for (int i = 0; i < width * height; i++)
+            {
+                s[i * 4 + 0] = simpleret[i];
+                s[i * 4 + 1] = simpleret[i];
+                s[i * 4 + 2] = simpleret[i];
+                s[i * 4 + 3] = 255;
+            }
+            BitmapData data0 = Img.LockBits(new Rectangle(0, 0, Img.Width, Img.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            IntPtr intptr = data0.Scan0;
+            Marshal.Copy(s, 0, intptr, s.Length);
+            Img.UnlockBits(data0);
+            return Img;
+        }
+        public Image toGrayOriImage()
+        {
+            Bitmap Img = new Bitmap(width, height);
+            var simpleret = (toGray());
             byte[] s = new byte[width * height * 4];
             for (int i = 0; i < width * height; i++)
             {
