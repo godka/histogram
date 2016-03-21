@@ -9,13 +9,40 @@ namespace histogram
 {
     class equalization
     {
+        //private Bitmap img;
         private int width, height;
         private string m_filename;
         private byte[] m_data;
+        [DllImport("AdaptHistEqualize.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, ExactSpelling = true)]
+        private static extern void AdaptHistEqualize(byte[] Scan0, int Width, int Height, int Stride, int TileX, int TileY, double CutLimit, bool SeparateChannel);
+
         public equalization(string filename)
         {
             m_filename = filename;
             m_data = readFromFile();
+        }
+        public Image toCLAHEImage(int tilex, int tiley, double cl, bool sc)
+        {
+
+            byte[] mimage = new byte[width * height * 3];
+            int j = 0;
+            for (int i = 0; i < width * height * 4; i += 4)
+            {
+                mimage[j++] = m_data[i];
+                mimage[j++] = m_data[i + 1];
+                mimage[j++] = m_data[i + 2];
+            }
+            AdaptHistEqualize(mimage, width, height, width * 3,
+                tilex, tiley, cl * 1f, sc);
+            Bitmap Img = new Bitmap(width, height);
+            BitmapData data0 = Img.LockBits(new Rectangle(0, 0, Img.Width, Img.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            IntPtr intptr = data0.Scan0;
+            Marshal.Copy(mimage, 0, intptr, mimage.Length);
+            Img.UnlockBits(data0);
+
+            //data0 = Img.LockBits(new Rectangle(0, 0, Img.Width, Img.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            //Img.UnlockBits(data0);
+            return Img;
         }
         private byte[] readFromFile()
         {
@@ -28,6 +55,7 @@ namespace histogram
             IntPtr intptr = data0.Scan0;
             Marshal.Copy(intptr, tmpbyte, 0, tmpbyte.Length);
             image.UnlockBits(data0);
+            //img = image;
             image.Dispose();
             return tmpbyte;
         }
