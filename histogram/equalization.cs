@@ -106,7 +106,7 @@ namespace histogram
                 long mt = temp << 8;
                 near_p[i] = (byte)(mt / mbyte.LongLength);
             }
-            for (int i = 0; i < width * height; i++)
+            for (int i = 0; i < mbyte.Length; i++)
                 mbyte[i] = near_p[mbyte[i]];
             return mbyte;
         }
@@ -154,6 +154,25 @@ namespace histogram
             Marshal.Copy(m_data, 0, intptr, this.m_data.Length);
             Img.UnlockBits(data0);
             return Img;
+        }
+        public Image toRGBImage()
+        {
+            Bitmap Img = new Bitmap(width, height);
+            byte[] s = new byte[width * height * 3];
+            int j = 0;
+            for (int i = 0; i < width * height * 4; i += 4)
+            {
+                s[j++] = m_data[i];
+                s[j++] = m_data[i + 1];
+                s[j++] = m_data[i + 2];
+            }
+            singleStep(s);
+            BitmapData data0 = Img.LockBits(new Rectangle(0, 0, Img.Width, Img.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            IntPtr intptr = data0.Scan0;
+            Marshal.Copy(s, 0, intptr, s.Length);
+            Img.UnlockBits(data0);
+            return Img;
+            //return toImage(new Rectangle(0, 0, width, height));
         }
         public Image toImage()
         {

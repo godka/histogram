@@ -75,5 +75,11 @@ namespace histogram
                 MessageBox.Show(ee.Message.ToString());
             }
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+
+            this.pictureBox1.Image = equ.toRGBImage();
+        }
     }
 }
